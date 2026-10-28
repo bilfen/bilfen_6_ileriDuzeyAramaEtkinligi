@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İleri Düzey Arama Etkinliği - Bilişim Oyun Uygulaması</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Fredoka', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#3B82F6',
+                            purple: '#8B5CF6',
+                            pink: '#EC4899',
+                            amber: '#F59E0B',
+                            emerald: '#10B981',
+                            dark: '#0F172A'
+                        }
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(139, 92, 246, 0.5)' },
+                            '50%': { boxShadow: '0 0 30px rgba(139, 92, 246, 0.8)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        },
+                        popIn: {
+                            '0%': { transform: 'scale(0.8)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+
+        .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        .confetti-piece {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            top: -20px;
+            z-index: 9999;
+            animation: fall 3.5s ease-out forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* AYDINLIK TEMALANDIRMA (LIGHT MODE STYLES) */
+        body.light-theme {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #f3e8ff 100%);
+            color: #0f172a;
+        }
+        body.light-theme header {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-color: rgba(203, 213, 225, 0.8);
+        }
+        body.light-theme footer {
+            background-color: #ffffff;
+            border-color: #e2e8f0;
+            color: #475569;
+        }
+        body.light-theme .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+        body.light-theme .glass-card-hover:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.2);
+        }
+        body.light-theme .text-white {
+            color: #0f172a !important;
+        }
+        body.light-theme .text-slate-300 {
+            color: #334155 !important;
+        }
+        body.light-theme .text-slate-400 {
+            color: #475569 !important;
+        }
+        body.light-theme .text-slate-200 {
+            color: #1e293b !important;
+        }
+        body.light-theme .bg-slate-800,
+        body.light-theme .bg-slate-800\/80,
+        body.light-theme .bg-slate-800\/60,
+        body.light-theme .bg-slate-900,
+        body.light-theme .bg-slate-900\/60,
+        body.light-theme .bg-slate-900\/80,
+        body.light-theme .bg-slate-900\/90,
+        body.light-theme .bg-slate-950,
+        body.light-theme .bg-slate-950\/80,
+        body.light-theme .bg-slate-950\/90 {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme input#m1-search-input {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme #sound-btn,
+        body.light-theme #theme-btn {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #334155 !important;
+        }
+        body.light-theme #sound-btn:hover,
+        body.light-theme #theme-btn:hover {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        /* AYDINLIK MOD HERO BANNER ÖZEL STİLİ */
+        body.light-theme .hero-banner {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(243, 232, 255, 0.9) 50%, rgba(224, 231, 255, 0.9) 100%) !important;
+            border-color: rgba(168, 85, 247, 0.3) !important;
+            box-shadow: 0 20px 25px -5px rgba(147, 51, 234, 0.1), 0 8px 10px -6px rgba(147, 51, 234, 0.05) !important;
+        }
+        body.light-theme .hero-title {
+            background: linear-gradient(to right, #4c1d95, #831843, #1e3a8a) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            color: transparent !important;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen custom-scrollbar selection:bg-purple-500 selection:text-white">
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-700/60 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showModule('dashboard')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center text-white text-xl font-black shadow-lg shadow-purple-500/30">
+                    <i class="fa-solid fa-magnifying-glass-location"></i>
+                </div>
+                <div>
+                    <h1 class="font-heading text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-300 via-pink-300 to-amber-200 bg-clip-text text-transparent">
+                        İleri Düzey Arama Etkinliği
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">İnternet & Bilgi Arama Oyun Laboratuvarı</p>
+                </div>
+            </div>
+
+            <!-- Stats & Controls -->
+            <div class="flex items-center space-x-3 md:space-x-6">
+                <!-- Score Pill -->
+                <div class="flex items-center space-x-2 bg-slate-800/80 border border-amber-500/30 px-3 py-1.5 rounded-full shadow-inner">
+                    <i class="fa-solid fa-star text-amber-400 text-lg animate-pulse"></i>
+                    <span class="text-xs text-slate-400 uppercase font-semibold">Puan:</span>
+                    <span id="user-score" class="font-heading font-bold text-amber-300 text-lg">0</span>
+                </div>
+
+                <!-- Badges Indicator -->
+                <button onclick="openBadgesModal()" class="flex items-center space-x-2 bg-slate-800/80 border border-purple-500/30 px-3 py-1.5 rounded-full hover:bg-slate-700/60 transition">
+                    <i class="fa-solid fa-award text-purple-400 text-lg"></i>
+                    <span id="badge-count" class="text-xs font-bold text-purple-200">0/3 Görev</span>
+                </button>
+
+                <!-- Theme Toggle -->
+                <button id="theme-btn" onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700 transition" title="Tema Değiştir (Aydınlık / Karanlık)">
+                    <i id="theme-icon" class="fa-solid fa-moon text-purple-400"></i>
+                </button>
+
+                <!-- Audio Toggle -->
+                <button id="sound-btn" onclick="toggleSound()" class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white hover:bg-slate-700 transition">
+                    <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col">
+
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="space-y-8 animate-fade-in">
+            <!-- Hero Banner -->
+            <div class="hero-banner relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900/60 via-slate-900/80 to-blue-900/60 border border-purple-500/30 p-6 md:p-10 shadow-2xl">
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        <i class="fa-solid fa-rocket"></i> Bilişim Teknolojileri
+                    </span>
+                    <h2 class="hero-title font-heading text-3xl md:text-5xl font-extrabold text-white leading-tight">
+                        İnternet Arama & Verimlilik Gücünü Keşfet!
+                    </h2>
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed">
+                        Arama operatörleri ile doğru bilgiye saniyeler içinde ulaş, arama motorlarını amacına göre seç ve yeni internet teknolojileri ile verimliliğini zirveye çıkar!
+                    </p>
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="showModule('mod1')" class="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-purple-500/30 flex items-center gap-2 transition active:scale-95">
+                            <i class="fa-solid fa-play"></i> Hemen Başla
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Modül 1 Card -->
+                <div id="card-mod1" onclick="showModule('mod1')" class="glass-card glass-card-hover rounded-3xl p-6 cursor-pointer relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition"></div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-14 h-14 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 text-2xl font-bold">
+                                <i class="fa-solid fa-user-ninja"></i>
+                            </div>
+                            <span id="lock-badge-mod1" class="hidden px-3 py-1 rounded-full text-xs font-bold bg-slate-800/90 text-amber-400 border border-amber-500/40 flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-lock text-amber-400"></i> Tamamlandı
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-blue-400 uppercase tracking-wider">1. Bölüm</span>
+                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-blue-300 transition mt-1">
+                                Siber Arama Dedektifi
+                            </h3>
+                            <p class="text-slate-400 text-sm mt-2">
+                                `site:`, `filetype:`, `" "` ve `-` gibi ileri düzey arama operatörlerini görevler üstünde dene ve gizli bilgileri bul!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-slate-400">
+                        <span>2 Mini Oyun • 100 Puan</span>
+                        <span id="card-btn-mod1" class="text-blue-400 flex items-center gap-1 group-hover:translate-x-1 transition">Oyna <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Modül 2 Card -->
+                <div id="card-mod2" onclick="showModule('mod2')" class="glass-card glass-card-hover rounded-3xl p-6 cursor-pointer relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition"></div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-14 h-14 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 text-2xl font-bold">
+                                <i class="fa-solid fa-compass"></i>
+                            </div>
+                            <span id="lock-badge-mod2" class="hidden px-3 py-1 rounded-full text-xs font-bold bg-slate-800/90 text-amber-400 border border-amber-500/40 flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-lock text-amber-400"></i> Tamamlandı
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider">2. Bölüm</span>
+                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-purple-300 transition mt-1">
+                                Arama Motorları Uzmanı
+                            </h3>
+                            <p class="text-slate-400 text-sm mt-2">
+                                Google Akademik, EBA, DuckDuckGo, Kiddle ve genel arama motorlarını doğru amaçla eşleştir ve haritayı tamamla.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-slate-400">
+                        <span>Sınıflandırma Oyunu • 80 Puan</span>
+                        <span id="card-btn-mod2" class="text-purple-400 flex items-center gap-1 group-hover:translate-x-1 transition">Oyna <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Modül 3 Card -->
+                <div id="card-mod3" onclick="showModule('mod3')" class="glass-card glass-card-hover rounded-3xl p-6 cursor-pointer relative overflow-hidden group flex flex-col justify-between">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition"></div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl font-bold">
+                                <i class="fa-solid fa-bolt-lightning"></i>
+                            </div>
+                            <span id="lock-badge-mod3" class="hidden px-3 py-1 rounded-full text-xs font-bold bg-slate-800/90 text-amber-400 border border-amber-500/40 flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-lock text-amber-400"></i> Tamamlandı
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">3. Bölüm</span>
+                            <h3 class="font-heading text-2xl font-bold text-white group-hover:text-emerald-300 transition mt-1">
+                                Verimlilik Arenası
+                            </h3>
+                            <p class="text-slate-400 text-sm mt-2">
+                                Yeni internet teknolojilerini (Bulut, Canlı Belge Düzenleme vb.) değerlendir; zaman kazandıran ve kaybettiren davranışları ayırt et!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs font-semibold text-slate-400">
+                        <span>Karar Kartları Oyunu • 80 Puan</span>
+                        <span id="card-btn-mod3" class="text-emerald-400 flex items-center gap-1 group-hover:translate-x-1 transition">Oyna <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Quick Summary -->
+            <div class="glass-card rounded-3xl p-6 border-slate-700/50">
+                <h4 class="font-heading text-lg font-bold text-slate-200 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-amber-400"></i> Hızlı Bilgi İpucu
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs text-slate-300">
+                    <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/40">
+                        <span class="font-mono text-pink-400 font-bold block text-sm">"Kelime Öbeği"</span>
+                        Tırnak içinde yazılan kelimeleri yan yana tam kalıp olarak arar.
+                    </div>
+                    <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/40">
+                        <span class="font-mono text-cyan-400 font-bold block text-sm">site:gov.tr</span>
+                        Aramayı sadece seçtiğiniz web sitesi veya alan uzantısıyla sınırlar.
+                    </div>
+                    <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/40">
+                        <span class="font-mono text-amber-400 font-bold block text-sm">filetype:pdf</span>
+                        Sadece PDF, PPTX veya DOCX gibi belirli dosya türlerini listeler.
+                    </div>
+                    <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700/40">
+                        <span class="font-mono text-purple-400 font-bold block text-sm">konu -eksi</span>
+                        Eksi işareti (`-`), kelimeden hemen önce gelerek o kelimeyi sonuçlardan çıkarır.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 1 VIEW: SİBER ARAMA DEDEKTİFİ -->
+        <section id="view-mod1" class="hidden space-y-6 animate-fade-in">
+            <!-- Navigation Header for Module -->
+            <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+                <button onclick="showModule('dashboard')" class="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-semibold transition">
+                    <i class="fa-solid fa-arrow-left"></i> Ana Menüye Dön
+                </button>
+                <div class="text-center">
+                    <span class="text-xs text-blue-400 font-bold uppercase tracking-widest">Modül 1</span>
+                    <h2 class="font-heading text-xl font-bold text-white">Siber Arama Dedektifi</h2>
+                </div>
+                <div class="w-20"></div><!-- spacer -->
+            </div>
+
+            <!-- Tab Switcher inside Mod 1 -->
+            <div class="flex border-b border-slate-800">
+                <button id="mod1-tab-1" onclick="switchMod1Tab(1)" class="px-5 py-3 font-heading font-bold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2">
+                    <i class="fa-solid fa-terminal"></i> 1. Görev: Arama Simülatörü
+                </button>
+                <button id="mod1-tab-2" onclick="switchMod1Tab(2)" class="px-5 py-3 font-heading font-bold text-sm border-b-2 border-transparent text-slate-500 opacity-60 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-amber-400"></i> 2. Görev: Operatör Eşleştirme
+                </button>
+            </div>
+
+            <!-- TAB 1: SEARCH SIMULATOR GAME -->
+            <div id="mod1-game-1" class="space-y-6">
+                <!-- Mission Box -->
+                <div class="glass-card rounded-3xl p-6 border-blue-500/30 relative">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-wide">
+                                <span id="m1-step-badge" class="bg-blue-500/20 px-2.5 py-0.5 rounded-full border border-blue-500/40">Görev 1 / 5</span>
+                                <span>İleri Düzey Arama Komutu Sentezleme</span>
+                            </div>
+                            <h3 id="m1-mission-title" class="font-heading text-xl md:text-2xl font-bold text-white mt-1">
+                                Yükleniyor...
+                            </h3>
+                            <p id="m1-mission-desc" class="text-slate-300 text-sm mt-1">
+                                Yükleniyor...
+                            </p>
+                        </div>
+                        <div class="shrink-0 bg-blue-950/60 p-3 rounded-2xl border border-blue-500/30 text-right">
+                            <span class="text-xs text-slate-400 block">Görev Ödülü</span>
+                            <span id="m1-mission-reward" class="font-heading font-bold text-amber-300 text-lg">+20 Puan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Search Bar Simulator -->
+                <div class="glass-card rounded-3xl p-6 border-slate-700/60 space-y-4">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Arama Motoru Giriş Alanı</label>
+                    <div class="relative flex items-center">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 text-slate-400 text-lg"></i>
+                        <input type="text" id="m1-search-input" placeholder="Arama sorgusunu buraya yazın veya aşağıdaki parçaları kullanın..." 
+                               class="w-full bg-slate-900/90 border-2 border-slate-700 focus:border-blue-500 rounded-2xl py-3.5 pl-12 pr-28 text-white font-mono text-sm md:text-base outline-none transition">
+                        <button onclick="checkM1Search()" class="absolute right-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold px-5 py-2 rounded-xl shadow-md transition text-sm flex items-center gap-1.5">
+                            <span>ARA</span> <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Quick Code Block Chips -->
+                    <div>
+                        <span class="text-xs text-slate-400 block mb-2 font-medium">Hızlı Parça Ekle (Tıkla ve Ekle):</span>
+                        <div id="m1-chips-container" class="flex flex-wrap gap-2">
+                            <!-- Chips will be generated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulated Search Results Box -->
+                <div id="m1-results-box" class="glass-card rounded-3xl p-6 border-slate-700/60 hidden transition-all duration-300">
+                    <div id="m1-feedback-banner" class="p-4 rounded-2xl mb-4 font-bold text-sm flex items-center gap-3">
+                        <!-- Dynamic Feedback -->
+                    </div>
+                    <div id="m1-simulated-results" class="space-y-4">
+                        <!-- Simulated search engine result links -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: OPERATOR MATCHING GAME -->
+            <div id="mod1-game-2" class="hidden space-y-6">
+                <div class="glass-card rounded-3xl p-6 border-purple-500/30">
+                    <h3 class="font-heading text-xl font-bold text-white mb-2">Arama Operatörleri Kart Eşleştirme</h3>
+                    <p class="text-slate-300 text-sm">
+                        Sol taraftaki sembol ve sözdizimini (syntax) doğru açıklamayla eşleştirmek için kartlara sırayla tıklayın.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Column 1: Operators -->
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider">Arama Operatörleri</h4>
+                        <div id="operator-cards" class="space-y-3">
+                            <!-- JS Populated -->
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Meanings -->
+                    <div class="space-y-3">
+                        <h4 class="text-xs font-bold text-pink-400 uppercase tracking-wider">Açıklamalar / İşlevler</h4>
+                        <div id="meaning-cards" class="space-y-3">
+                            <!-- JS Populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2 VIEW: ARAMA MOTORLARI UZMANI -->
+        <section id="view-mod2" class="hidden space-y-6 animate-fade-in">
+            <!-- Navigation Header -->
+            <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+                <button onclick="showModule('dashboard')" class="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-semibold transition">
+                    <i class="fa-solid fa-arrow-left"></i> Ana Menüye Dön
+                </button>
+                <div class="text-center">
+                    <span class="text-xs text-purple-400 font-bold uppercase tracking-widest">Modül 2</span>
+                    <h2 class="font-heading text-xl font-bold text-white">Arama Motorları Uzmanı</h2>
+                </div>
+                <div class="w-20"></div>
+            </div>
+
+            <!-- Overview Banner -->
+            <div class="glass-card rounded-3xl p-6 border-purple-500/30 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 class="font-heading text-2xl font-bold text-white">Doğru Amaca Doğru Arama Motoru!</h3>
+                    <p class="text-slate-300 text-sm mt-1">
+                        Her arama motoru aynı değildir. Akademik makaleler, çocuklara özel güvenli içerikler, ders materyalleri veya gizlilik odaklı aramalar için özel motorlar kullanılır.
+                    </p>
+                </div>
+                <div class="shrink-0 bg-purple-900/40 border border-purple-500/30 px-4 py-2 rounded-2xl text-center">
+                    <span class="text-xs text-slate-300 block">Eşleşen Kategori</span>
+                    <span id="m2-progress" class="font-heading font-bold text-purple-300 text-xl">0 / 5</span>
+                </div>
+            </div>
+
+            <!-- Quiz / Sorting Game Area -->
+            <div id="m2-game-box" class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Current Scenario / Engine Card -->
+                <div class="md:col-span-5 glass-card rounded-3xl p-6 border-purple-500/40 flex flex-col justify-between space-y-6">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 mb-3">
+                            <i class="fa-solid fa-magnifying-glass"></i> Arama Senaryosu
+                        </span>
+                        <h4 id="m2-scenario-title" class="font-heading text-2xl font-bold text-white leading-snug">
+                            Yükleniyor...
+                        </h4>
+                        <p id="m2-scenario-desc" class="text-slate-300 text-sm mt-3 leading-relaxed">
+                            Yükleniyor...
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-700/60">
+                        <span class="text-xs text-slate-400 block font-semibold">Hedef Arama Tipi:</span>
+                        <span id="m2-scenario-target" class="text-amber-300 font-bold text-sm">--</span>
+                    </div>
+                </div>
+
+                <!-- Target Engine Selection Grid -->
+                <div class="md:col-span-7 space-y-3">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Aşağıdaki Arama Motorlarından En Uygun Olanını Seç:</label>
+                    <div id="m2-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- JS Dynamic Engine Buttons -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 3 VIEW: VERİMLİLİK ARENASI -->
+        <section id="view-mod3" class="hidden space-y-6 animate-fade-in">
+            <!-- Navigation Header -->
+            <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+                <button onclick="showModule('dashboard')" class="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-semibold transition">
+                    <i class="fa-solid fa-arrow-left"></i> Ana Menüye Dön
+                </button>
+                <div class="text-center">
+                    <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">Modül 3</span>
+                    <h2 class="font-heading text-xl font-bold text-white">Verimlilik & İnternet Arenası</h2>
+                </div>
+                <div class="w-20"></div>
+            </div>
+
+            <!-- Banner -->
+            <div class="glass-card rounded-3xl p-6 border-emerald-500/30">
+                <h3 class="font-heading text-2xl font-bold text-white">İnternet Teknolojileri ile Zamandan Tasarruf Et!</h3>
+                <p class="text-slate-300 text-sm mt-1">
+                    Öğrendiğin yeni internet teknolojilerini (Bulut depolama, online ortak çalışma, gelişmiş filtreleme) verimlilik bakımından değerlendir. Aşağıdaki davranış verimli mi yoksa zaman kaybı mı?
+                </p>
+            </div>
+
+            <!-- Card Swiper Game -->
+            <div class="max-w-2xl mx-auto space-y-6">
+                <!-- Current Card Display -->
+                <div id="m3-card" class="glass-card rounded-3xl p-8 border-2 border-emerald-500/40 text-center space-y-6 relative overflow-hidden transition-all duration-300">
+                    <div class="w-20 h-20 mx-auto rounded-3xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-3xl">
+                        <i id="m3-card-icon" class="fa-solid fa-laptop-code"></i>
+                    </div>
+
+                    <div class="space-y-2">
+                        <span id="m3-tech-tag" class="text-xs font-bold uppercase px-3 py-1 rounded-full bg-slate-800 text-emerald-300 border border-slate-700 inline-block">
+                            Teknoloji
+                        </span>
+                        <h4 id="m3-card-title" class="font-heading text-2xl font-bold text-white">
+                            Yükleniyor...
+                        </h4>
+                        <p id="m3-card-desc" class="text-slate-300 text-sm max-w-md mx-auto">
+                            Yükleniyor...
+                        </p>
+                    </div>
+
+                    <!-- Choice Buttons -->
+                    <div class="grid grid-cols-2 gap-4 pt-4">
+                        <button onclick="evaluateM3Choice(false)" class="bg-red-500/20 hover:bg-red-500/30 border-2 border-red-500/50 text-red-300 font-heading font-bold py-4 px-4 rounded-2xl flex flex-col items-center gap-1 transition active:scale-95">
+                            <i class="fa-solid fa-circle-xmark text-2xl"></i>
+                            <span class="text-sm">Zaman Kaybı / Düşük Verim</span>
+                        </button>
+                        <button onclick="evaluateM3Choice(true)" class="bg-emerald-500/20 hover:bg-emerald-500/30 border-2 border-emerald-500/50 text-emerald-300 font-heading font-bold py-4 px-4 rounded-2xl flex flex-col items-center gap-1 transition active:scale-95">
+                            <i class="fa-solid fa-circle-check text-2xl"></i>
+                            <span class="text-sm">Yüksek Verimlilik</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-bold text-slate-400">
+                        <span>İlerleme</span>
+                        <span id="m3-progress-text">0 / 6</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden border border-slate-700">
+                        <div id="m3-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-4 px-4 text-center text-xs text-slate-400">
+        <p>Bilişim Teknolojileri - İnternet ile Amacına Uygun Çalışabilme</p>
+        <p class="mt-1 text-slate-400">Öğrenci Dostu Etkileşimli Öğrenme Ortamı</p>
+    </footer>
+
+    <!-- BADGES & PROGRESS MODAL -->
+    <div id="modal-badges" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-lg w-full rounded-3xl p-6 border-purple-500/40 relative space-y-6">
+            <button onclick="closeBadgesModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-purple-500/20 border border-purple-500/40 rounded-2xl mx-auto flex items-center justify-center text-purple-400 text-3xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h3 class="font-heading text-2xl font-bold text-white">Görev İlerlemen</h3>
+                <p class="text-xs text-slate-300">Tüm bölümlerdeki görevleri tamamla!</p>
+            </div>
+
+            <!-- Badges List -->
+            <div class="space-y-3">
+                <div id="badge-1" class="flex items-center gap-4 bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 opacity-50">
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 text-xl font-bold shrink-0">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-bold text-white text-sm">1. Bölüm: Arama Dedektifi</h4>
+                        <p class="text-xs text-slate-400">Modül 1'deki tüm görevleri tamamla.</p>
+                    </div>
+                </div>
+
+                <div id="badge-2" class="flex items-center gap-4 bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 opacity-50">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-xl font-bold shrink-0">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-bold text-white text-sm">2. Bölüm: Motor Mimarisi Uzmanı</h4>
+                        <p class="text-xs text-slate-400">Modül 2'deki tüm arama motoru eşleştirmelerini yap.</p>
+                    </div>
+                </div>
+
+                <div id="badge-3" class="flex items-center gap-4 bg-slate-900/80 p-3.5 rounded-2xl border border-slate-800 opacity-50">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-xl font-bold shrink-0">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-bold text-white text-sm">3. Bölüm: Verimlilik Şampiyonu</h4>
+                        <p class="text-xs text-slate-400">Modül 3'teki verimlilik senaryolarını tamamla.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeBadgesModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-heading font-bold py-3 rounded-2xl text-sm transition">
+                Kapat ve Oyuna Dön
+            </button>
+        </div>
+    </div>
+
+    <!-- ALL TASKS COMPLETED CELEBRATION MODAL -->
+    <div id="modal-completed-all" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-lg hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-xl w-full rounded-3xl p-8 border-2 border-amber-400/80 relative text-center space-y-6 shadow-2xl animate-pop-in">
+            <div class="w-24 h-24 bg-gradient-to-tr from-amber-400 to-pink-500 rounded-3xl mx-auto flex items-center justify-center text-slate-950 text-5xl shadow-xl shadow-amber-500/40 animate-bounce-slow">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+
+            <div class="space-y-2">
+                <span class="px-4 py-1.5 rounded-full bg-amber-400/20 text-amber-300 font-bold text-xs uppercase tracking-widest border border-amber-400/40">
+                    Süper Başarı!
+                </span>
+                <h2 class="font-heading text-3xl md:text-4xl font-black text-white">
+                    TÜM GÖREVLER BAŞARIYLA TAMAMLANDI!
+                </h2>
+                <p class="text-slate-300 text-sm max-w-md mx-auto leading-relaxed">
+                    Tebrikler! İleri düzey arama operatörleri, arama motoru türleri ve internet teknolojileri verimliliği konularındaki tüm aşamaları üstün başarıyla bitirdin!
+                </p>
+            </div>
+
+            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 flex justify-around items-center">
+                <div>
+                    <span class="text-xs text-slate-400 block font-semibold">Toplam Puanın</span>
+                    <span id="final-total-score" class="font-heading font-extrabold text-amber-400 text-3xl">0</span>
+                </div>
+                <div class="h-10 w-px bg-slate-800"></div>
+                <div>
+                    <span class="text-xs text-slate-400 block font-semibold">Tamamlanan Bölümler</span>
+                    <span class="font-heading font-bold text-emerald-400 text-2xl">3 / 3</span>
+                </div>
+            </div>
+
+            <button onclick="resetGame()" class="w-full bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 hover:from-amber-500 hover:to-purple-700 text-slate-950 font-heading font-black py-4 rounded-2xl text-base shadow-xl transition active:scale-95 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> Oyunu Baştan Başlat
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- GAME STATE & AUDIO SYSTEM ---
+        let state = {
+            score: 0,
+            soundEnabled: true,
+            theme: 'dark',
+            badges: {
+                mod1: false,
+                mod2: false,
+                mod3: false
+            },
+            mod1Task1Done: false,
+            mod1Task2Done: false,
+            mod1CurrentStep: 0,
+            mod2CurrentStep: 0,
+            m3CurrentStep: 0,
+            opMatchedPairs: 0
+        };
+
+        let audioCtx = null;
+
+        function toggleTheme() {
+            playSound('click');
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            const icon = document.getElementById('theme-icon');
+            
+            if (state.theme === 'light') {
+                document.body.classList.add('light-theme');
+                icon.className = 'fa-solid fa-sun text-amber-500';
+            } else {
+                document.body.classList.remove('light-theme');
+                icon.className = 'fa-solid fa-moon text-purple-400';
+            }
+        }
+
+        function playSound(type) {
+            if (!state.soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, now); // A3
+                    osc.frequency.linearRampToValueAtTime(140, now + 0.25);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, now);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'win') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.setValueAtTime(554.37, now + 0.1);
+                    osc.frequency.setValueAtTime(659.25, now + 0.2);
+                    osc.frequency.setValueAtTime(880, now + 0.3);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+                }
+            } catch (e) {
+                console.log('Audio init error:', e);
+            }
+        }
+
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (state.soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+                playSound('click');
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+            }
+        }
+
+        function addScore(points) {
+            state.score += points;
+            document.getElementById('user-score').innerText = state.score;
+        }
+
+        // --- MODULE NAVIGATION ---
+        function showModule(modId) {
+            playSound('click');
+
+            // Check if section is already completed and locked
+            if (modId !== 'dashboard' && state.badges[modId]) {
+                playSound('wrong');
+                alertModal("🔒 Bu bölümü daha önce başarıyla tamamladın! Kilitli olduğu için tekrar girilemez.");
+                return;
+            }
+
+            const views = ['dashboard', 'mod1', 'mod2', 'mod3'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (v === modId) {
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateDashboardCards() {
+            ['mod1', 'mod2', 'mod3'].forEach(modKey => {
+                const cardEl = document.getElementById(`card-${modKey}`);
+                const lockBadge = document.getElementById(`lock-badge-${modKey}`);
+                const cardBtn = document.getElementById(`card-btn-${modKey}`);
+
+                if (state.badges[modKey]) {
+                    cardEl.classList.add('opacity-75', 'border-amber-500/50', 'bg-slate-900/90');
+                    cardEl.classList.remove('glass-card-hover');
+                    if (lockBadge) lockBadge.classList.remove('hidden');
+                    if (cardBtn) cardBtn.innerHTML = '<span class="text-amber-400">Tamamlandı (Kilitli)</span> <i class="fa-solid fa-lock text-amber-400"></i>';
+                } else {
+                    cardEl.classList.remove('opacity-75', 'border-amber-500/50', 'bg-slate-900/90');
+                    cardEl.classList.add('glass-card-hover');
+                    if (lockBadge) lockBadge.classList.add('hidden');
+                    if (cardBtn) {
+                        const colorClass = modKey === 'mod1' ? 'text-blue-400' : modKey === 'mod2' ? 'text-purple-400' : 'text-emerald-400';
+                        cardBtn.innerHTML = `Oyna <i class="fa-solid fa-arrow-right"></i>`;
+                        cardBtn.className = `${colorClass} flex items-center gap-1 group-hover:translate-x-1 transition`;
+                    }
+                }
+            });
+        }
+
+        function updateMod1TabUI() {
+            const btn2 = document.getElementById('mod1-tab-2');
+            if (!btn2) return;
+            if (state.mod1Task1Done) {
+                btn2.classList.remove('opacity-60', 'text-slate-500');
+                if (btn2.classList.contains('border-purple-500')) {
+                    btn2.className = 'px-5 py-3 font-heading font-bold text-sm border-b-2 border-purple-500 text-purple-400 flex items-center gap-2';
+                } else {
+                    btn2.className = 'px-5 py-3 font-heading font-bold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2';
+                }
+                btn2.innerHTML = '<i class="fa-solid fa-puzzle-piece"></i> 2. Görev: Operatör Eşleştirme';
+            } else {
+                btn2.className = 'px-5 py-3 font-heading font-bold text-sm border-b-2 border-transparent text-slate-500 opacity-60 flex items-center gap-2';
+                btn2.innerHTML = '<i class="fa-solid fa-lock text-amber-400"></i> 2. Görev: Operatör Eşleştirme';
+            }
+        }
+
+        function switchMod1Tab(tabNum) {
+            if (tabNum === 2 && !state.mod1Task1Done) {
+                playSound('wrong');
+                alertModal("🔒 2. Göreve geçebilmek için önce 1. Görevi (Arama Simülatörü) tamamlamalısın!");
+                return;
+            }
+
+            playSound('click');
+            const btn1 = document.getElementById('mod1-tab-1');
+            const btn2 = document.getElementById('mod1-tab-2');
+            const g1 = document.getElementById('mod1-game-1');
+            const g2 = document.getElementById('mod1-game-2');
+
+            if (tabNum === 1) {
+                btn1.className = 'px-5 py-3 font-heading font-bold text-sm border-b-2 border-blue-500 text-blue-400 flex items-center gap-2';
+                if (state.mod1Task1Done) {
+                    btn2.className = 'px-5 py-3 font-heading font-bold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2';
+                } else {
+                    btn2.className = 'px-5 py-3 font-heading font-bold text-sm border-b-2 border-transparent text-slate-500 opacity-60 flex items-center gap-2';
+                }
+                g1.classList.remove('hidden');
+                g2.classList.add('hidden');
+            } else {
+                btn2.className = 'px-5 py-3 font-heading font-bold text-sm border-b-2 border-purple-500 text-purple-400 flex items-center gap-2';
+                btn1.className = 'px-5 py-3 font-heading font-bold text-sm border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2';
+                g2.classList.remove('hidden');
+                g1.classList.add('hidden');
+            }
+        }
+
+        // --- MODAL CONTROLS & COMPLETION ---
+        function openBadgesModal() {
+            playSound('click');
+            document.getElementById('modal-badges').classList.remove('hidden');
+        }
+        function closeBadgesModal() {
+            document.getElementById('modal-badges').classList.add('hidden');
+        }
+
+        function unlockBadge(modKey) {
+            state.badges[modKey] = true;
+            let count = Object.values(state.badges).filter(Boolean).length;
+            document.getElementById('badge-count').innerText = `${count}/3 Görev`;
+
+            const badgeEl = document.getElementById(`badge-${modKey === 'mod1' ? '1' : modKey === 'mod2' ? '2' : '3'}`);
+            if (badgeEl) {
+                badgeEl.classList.remove('opacity-50');
+                badgeEl.classList.add('border-purple-500', 'bg-purple-950/40');
+            }
+
+            updateDashboardCards();
+
+            if (count === 3) {
+                setTimeout(() => {
+                    showAllCompletedModal();
+                }, 800);
+            }
+        }
+
+        function showAllCompletedModal() {
+            playSound('win');
+            document.getElementById('final-total-score').innerText = state.score;
+            document.getElementById('modal-completed-all').classList.remove('hidden');
+            createConfetti();
+        }
+
+        function resetGame() {
+            playSound('click');
+            state.score = 0;
+            state.badges = { mod1: false, mod2: false, mod3: false };
+            state.mod1Task1Done = false;
+            state.mod1Task2Done = false;
+            state.mod1CurrentStep = 0;
+            state.mod2CurrentStep = 0;
+            state.m3CurrentStep = 0;
+            state.opMatchedPairs = 0;
+
+            document.getElementById('user-score').innerText = '0';
+            document.getElementById('badge-count').innerText = '0/3 Görev';
+            
+            ['1', '2', '3'].forEach(num => {
+                const b = document.getElementById(`badge-${num}`);
+                if (b) {
+                    b.classList.add('opacity-50');
+                    b.classList.remove('border-purple-500', 'bg-purple-950/40');
+                }
+            });
+
+            updateMod1TabUI();
+            switchMod1Tab(1);
+            loadM1Step();
+            initOperatorMatching();
+            loadM2Step();
+            loadM3Step();
+            updateDashboardCards();
+
+            document.getElementById('modal-completed-all').classList.add('hidden');
+            showModule('dashboard');
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const p = document.createElement('div');
+                p.className = 'confetti-piece';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.backgroundColor = ['#EC4899', '#8B5CF6', '#3B82F6', '#10B981', '#F59E0B'][Math.floor(Math.random()*5)];
+                p.style.animationDelay = (Math.random() * 2) + 's';
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 4000);
+            }
+        }
+
+        // --- MODULE 1 GAME LOGIC (SEARCH SIMULATOR) ---
+        const m1Missions = [
+            {
+                title: "Resmî Devlet Kurumlarında İklim Değişikliği",
+                desc: "Sadece resmî devlet (.gov.tr) sitelerinde iklim değişikliği konusunu içeren sayfaları araman gerekiyor.",
+                expected: ["iklim değişikliği site:gov.tr", "site:gov.tr iklim değişikliği"],
+                chips: ["iklim değişikliği", "site:gov.tr", "filetype:pdf", "site:edu.tr", "-haber"],
+                reward: 20,
+                results: [
+                    { title: "İklim Değişikliği Eylem Planı - T.C. Çevre Bakanlığı", url: "https://csb.gov.tr/iklim-degisikligi", snippet: "T.C. Çevre, Şehircilik ve İklim Değişikliği Bakanlığı resmî bilgilendirme portalı." },
+                    { title: "İklim Değişikliği Raporu - gov.tr", url: "https://mgm.gov.tr/iklim-raporu", snippet: "Meteoroloji Genel Müdürlüğü iklim verileri ve devlet analizleri." }
+                ]
+            },
+            {
+                title: "Birebir Cümle Araması (Nutuk)",
+                desc: "Mustafa Kemal Atatürk'ün 'Bütün ümidim gençliktedir' sözünü kalıp halinde tam eşleşme olarak ara.",
+                expected: ['"bütün ümidim gençliktedir"'],
+                chips: ['"bütün ümidim gençliktedir"', 'bütün ümidim gençliktedir', 'site:edu.tr', '-şiir'],
+                reward: 20,
+                results: [
+                    { title: "Atatürk'ün Gençliğe İthamı ve Sözleri", url: "https://kutuphane.gov.tr/sozler", snippet: "'Bütün ümidim gençliktedir' ifadesinin yer aldığı tarihi belgeler ve orijinal metinler." }
+                ]
+            },
+            {
+                title: "Güneş Sistemi Sunusu (PowerPoint Dosyası)",
+                desc: "Güneş Sistemi konusu hakkında hazırlanmış sunum (pptx veya ppt) dosyalarını doğrudan listele.",
+                expected: ["güneş sistemi filetype:ppt", "güneş sistemi filetype:pptx", "filetype:ppt güneş sistemi", "filetype:pptx güneş sistemi"],
+                chips: ["güneş sistemi", "filetype:ppt", "filetype:pdf", "site:gov.tr", "sunu"],
+                reward: 20,
+                results: [
+                    { title: "[PPTX] Güneş Sistemi ve Gezegenler Dersi Sunusu", url: "https://eba.gov.tr/maddeler/gunes_sistemi.pptx", snippet: "6. Sınıf Fen Bilimleri dersine uygun slayt ve sunum dosyası indirme bağlantısı." }
+                ]
+            },
+            {
+                title: "Aramadan Belirli Bir Kelimeyi Çıkarma",
+                desc: "Yapay zeka konusunu ara ancak 'robot' kelimesini geçen sayfaları sonuçlardan çıkar.",
+                expected: ["yapay zeka -robot"],
+                chips: ["yapay zeka", "-robot", "site:com.tr", "robot", "filetype:doc"],
+                reward: 20,
+                results: [
+                    { title: "Yapay Zeka Metin ve Görsel Modelleri", url: "https://teknoloji.org/yapay-zeka", snippet: "Yazılım tabanlı yapay zeka sistemleri ve makine öğrenmesi kılavuzu (robotlar hariç)." }
+                ]
+            },
+            {
+                title: "Üniversitelerin Hazırladığı PDF Formatında Makaleler",
+                desc: "Sadece üniversite sitelerinde (.edu.tr) 'siber güvenlik' konulu PDF raporlarını ara.",
+                expected: [
+                    "siber güvenlik site:edu.tr filetype:pdf",
+                    "siber güvenlik filetype:pdf site:edu.tr",
+                    "site:edu.tr filetype:pdf siber güvenlik",
+                    "site:edu.tr siber güvenlik filetype:pdf"
+                ],
+                chips: ["siber güvenlik", "site:edu.tr", "filetype:pdf", "site:gov.tr", "-güvenlik"],
+                reward: 20,
+                results: [
+                    { title: "[PDF] Siber Güvenlik ve Ağ Teknolojileri - Üniversite Dergisi", url: "https://bilgisayar.metu.edu.tr/siber_guvenlik.pdf", snippet: "Akademik siber güvenlik araştırması ve teknik rapor belgeleri." }
+                ]
+            }
+        ];
+
+        function loadM1Step() {
+            const current = m1Missions[state.mod1CurrentStep];
+            document.getElementById('m1-step-badge').innerText = `Görev ${state.mod1CurrentStep + 1} / ${m1Missions.length}`;
+            document.getElementById('m1-mission-title').innerText = current.title;
+            document.getElementById('m1-mission-desc').innerText = current.desc;
+            document.getElementById('m1-mission-reward').innerText = `+${current.reward} Puan`;
+            document.getElementById('m1-search-input').value = '';
+
+            const chipsContainer = document.getElementById('m1-chips-container');
+            chipsContainer.innerHTML = '';
+            current.chips.forEach(chip => {
+                const btn = document.createElement('button');
+                btn.className = 'bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-mono font-bold px-3 py-1.5 rounded-lg transition active:scale-95';
+                btn.innerText = chip;
+                btn.onclick = () => {
+                    playSound('click');
+                    const inp = document.getElementById('m1-search-input');
+                    inp.value = inp.value ? `${inp.value.trim()} ${chip}` : chip;
+                };
+                chipsContainer.appendChild(btn);
+            });
+
+            document.getElementById('m1-results-box').classList.add('hidden');
+        }
+
+        function checkM1Search() {
+            const current = m1Missions[state.mod1CurrentStep];
+            const userQuery = document.getElementById('m1-search-input').value.trim().toLowerCase();
+            const resultsBox = document.getElementById('m1-results-box');
+            const feedbackBanner = document.getElementById('m1-feedback-banner');
+            const simulatedResults = document.getElementById('m1-simulated-results');
+
+            resultsBox.classList.remove('hidden');
+
+            const isCorrect = current.expected.some(exp => exp.toLowerCase() === userQuery);
+
+            if (isCorrect) {
+                playSound('correct');
+                feedbackBanner.className = 'p-4 rounded-2xl mb-4 font-bold text-sm flex items-center justify-between bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+                feedbackBanner.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-xl"></i>
+                        <span>Harika! Doğru arama operatörünü kullandın.</span>
+                    </div>
+                    <button onclick="nextM1Mission()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-1.5 rounded-xl font-bold transition text-xs">
+                        Sonraki Görevi Aç <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                `;
+
+                simulatedResults.innerHTML = current.results.map(r => `
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-700/60">
+                        <span class="text-xs text-blue-400 font-mono block">${r.url}</span>
+                        <h5 class="font-heading font-bold text-blue-300 hover:underline text-base cursor-pointer mt-0.5">${r.title}</h5>
+                        <p class="text-xs text-slate-300 mt-1">${r.snippet}</p>
+                    </div>
+                `).join('');
+
+                addScore(current.reward);
+            } else {
+                playSound('wrong');
+                feedbackBanner.className = 'p-4 rounded-2xl mb-4 font-bold text-sm flex items-center gap-2 bg-red-500/20 text-red-300 border border-red-500/40';
+                feedbackBanner.innerHTML = `
+                    <i class="fa-solid fa-circle-xmark text-xl"></i>
+                    <span>Sorgu tam doğru değil. İpucu: Yukarıdaki butonlardan doğru operatörleri tıklayarak birleştir.</span>
+                `;
+                simulatedResults.innerHTML = `
+                    <div class="text-center py-6 text-slate-400 text-xs">
+                        Arama komutu istenen şartları sağlamadığı için aradığınız nokta atışı sonuçlara ulaşılamadı.
+                    </div>
+                `;
+            }
+        }
+
+        function nextM1Mission() {
+            state.mod1CurrentStep++;
+            if (state.mod1CurrentStep < m1Missions.length) {
+                loadM1Step();
+            } else {
+                state.mod1Task1Done = true;
+                playSound('correct');
+                updateMod1TabUI();
+
+                alertModal("👏 1. Görev (Arama Simülatörü) başarıyla tamamlandı!\n\nŞimdi 2. Göreve (Operatör Eşleştirme) yönlendiriliyorsunuz.", () => {
+                    switchMod1Tab(2);
+                });
+            }
+        }
+
+        // --- OPERATOR MATCHING GAME (MOD 1 - TAB 2) ---
+        const operatorPairs = [
+            { id: 1, op: 'site:gov.tr', desc: 'Aramayı sadece .gov.tr uzantılı resmî devlet siteleriyle sınırlar.' },
+            { id: 2, op: 'filetype:pdf', desc: 'Sadece indirilebilir PDF dosya biçimindeki belgeleri getirir.' },
+            { id: 3, op: '" " (Tırnak İşareti)', desc: 'İçindeki kelimeleri birebir yan yana kalıp halinde arar.' },
+            { id: 4, op: '- (Eksi İşareti)', desc: 'Hemen arkasından gelen kelimeyi arama sonuçlarından hariç tutar.' }
+        ];
+
+        let selectedOp = null;
+        let selectedMeaning = null;
+
+        function initOperatorMatching() {
+            state.opMatchedPairs = 0;
+            const opContainer = document.getElementById('operator-cards');
+            const meaningContainer = document.getElementById('meaning-cards');
+
+            opContainer.innerHTML = '';
+            meaningContainer.innerHTML = '';
+
+            const shuffledMeanings = [...operatorPairs].sort(() => Math.random() - 0.5);
+
+            operatorPairs.forEach(pair => {
+                const btn = document.createElement('button');
+                btn.id = `op-${pair.id}`;
+                btn.className = 'w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left p-4 rounded-2xl font-mono text-purple-300 font-bold text-sm transition';
+                btn.innerText = pair.op;
+                btn.onclick = () => selectOpCard(pair.id, btn);
+                opContainer.appendChild(btn);
+            });
+
+            shuffledMeanings.forEach(pair => {
+                const btn = document.createElement('button');
+                btn.id = `meaning-${pair.id}`;
+                btn.className = 'w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-left p-4 rounded-2xl text-slate-300 text-xs transition leading-relaxed';
+                btn.innerText = pair.desc;
+                btn.onclick = () => selectMeaningCard(pair.id, btn);
+                meaningContainer.appendChild(btn);
+            });
+        }
+
+        function selectOpCard(id, el) {
+            playSound('click');
+            document.querySelectorAll('#operator-cards button').forEach(b => b.classList.remove('border-purple-500', 'bg-purple-900/40'));
+            selectedOp = id;
+            el.classList.add('border-purple-500', 'bg-purple-900/40');
+            checkPairMatch();
+        }
+
+        function selectMeaningCard(id, el) {
+            playSound('click');
+            document.querySelectorAll('#meaning-cards button').forEach(b => b.classList.remove('border-pink-500', 'bg-pink-900/40'));
+            selectedMeaning = id;
+            el.classList.add('border-pink-500', 'bg-pink-900/40');
+            checkPairMatch();
+        }
+
+        function checkPairMatch() {
+            if (selectedOp !== null && selectedMeaning !== null) {
+                if (selectedOp === selectedMeaning) {
+                    playSound('correct');
+                    const opEl = document.getElementById(`op-${selectedOp}`);
+                    const meanEl = document.getElementById(`meaning-${selectedMeaning}`);
+
+                    opEl.className = 'w-full bg-emerald-950/60 border-2 border-emerald-500 text-emerald-300 p-4 rounded-2xl font-mono font-bold text-sm opacity-60 pointer-events-none';
+                    meanEl.className = 'w-full bg-emerald-950/60 border-2 border-emerald-500 text-emerald-300 p-4 rounded-2xl text-xs opacity-60 pointer-events-none';
+
+                    addScore(15);
+                    state.opMatchedPairs++;
+                    selectedOp = null;
+                    selectedMeaning = null;
+
+                    // Check if all operator pairs are matched
+                    if (state.opMatchedPairs === operatorPairs.length) {
+                        state.mod1Task2Done = true;
+                        playSound('correct');
+                        finishMod1();
+                    }
+                } else {
+                    playSound('wrong');
+                    setTimeout(() => {
+                        document.querySelectorAll('#operator-cards button').forEach(b => b.classList.remove('border-purple-500', 'bg-purple-900/40'));
+                        document.querySelectorAll('#meaning-cards button').forEach(b => b.classList.remove('border-pink-500', 'bg-pink-900/40'));
+                        selectedOp = null;
+                        selectedMeaning = null;
+                    }, 500);
+                }
+            }
+        }
+
+        function finishMod1() {
+            playSound('win');
+            unlockBadge('mod1');
+            setTimeout(() => {
+                alertModal("🎉 Tebrikler! 1. Bölümün (Siber Arama Dedektifi) iki görevini de başarıyla tamamladın!\n\n1. Bölüm kilitlendi. Ana menüye yönlendiriliyorsun.", () => {
+                    showModule('dashboard');
+                });
+            }, 300);
+        }
+
+        // --- MODULE 2 GAME LOGIC (SEARCH ENGINE MATCHING) ---
+        const m2Scenarios = [
+            {
+                title: "Fen Bilimleri Proje Ödevi için İnceleme",
+                desc: "6. sınıf fen projen için bilimsel makaleler, akademik tezler ve hakemli dergi araştırması yapacaksın.",
+                target: "Akademik Arama Motoru",
+                correctEngine: "Google Akademik",
+                explanation: "Google Akademik (Scholar), bilimsel makaleler ve akademik yayınları tarar."
+            },
+            {
+                title: "Ders Materyali ve Video Ders İzleme",
+                desc: "Müfredata uygun ders videoları, testler ve etkinlikler bulmak istiyorsun.",
+                target: "Eğitim Portalı",
+                correctEngine: "EBA (Eğitim Bilişim Ağı)",
+                explanation: "EBA, ders içerikleri ve eğitim videoları sunan resmî platformdur."
+            },
+            {
+                title: "Gizlilik Odaklı Güvenli Arama",
+                desc: "Arama geçmişinin kaydedilmesini istemiyorsun ve kişisel verilerini takip etmeyen bir motor arıyorsun.",
+                target: "Gizlilik & Veri Korumalı Arama",
+                correctEngine: "DuckDuckGo",
+                explanation: "DuckDuckGo kullanıcılarını takip etmeyen gizlilik odaklı bir arama motorudur."
+            },
+            {
+                title: "İlkokul/Ortaokul Seviyesinde Güvenli Arama",
+                desc: "Zararlı içeriklerden arındırılmış, renkli ve güvenli arama sonuçlarına ulaşmak istiyorsun.",
+                target: "Çocuklar İçin Güvenli Motor",
+                correctEngine: "Kiddle",
+                explanation: "Kiddle, görsel ağırlıklı ve çocuklara özel filtreleri olan güvenli arama motorudur."
+            },
+            {
+                title: "Günlük Genel Bilgi & Web Sitesi Araması",
+                desc: "Hava durumu, güncel haberler veya genel bir web sitesinin adresini hızlıca bulmak istiyorsun.",
+                target: "Genel Arama Motoru",
+                correctEngine: "Google / Bing / Yandex",
+                explanation: "Genel arama motorları tüm web ağını indeksleyerek geniş sonuç sunar."
+            }
+        ];
+
+        const allEngineOptions = [
+            { name: "Google Akademik", icon: "fa-graduation-cap", color: "blue" },
+            { name: "EBA (Eğitim Bilişim Ağı)", icon: "fa-book-bookmark", color: "emerald" },
+            { name: "DuckDuckGo", icon: "fa-shield-halved", color: "amber" },
+            { name: "Kiddle", icon: "fa-child-reaching", color: "pink" },
+            { name: "Google / Bing / Yandex", icon: "fa-globe", color: "purple" }
+        ];
+
+        function loadM2Step() {
+            const current = m2Scenarios[state.mod2CurrentStep];
+            document.getElementById('m2-progress').innerText = `${state.mod2CurrentStep + 1} / ${m2Scenarios.length}`;
+            document.getElementById('m2-scenario-title').innerText = current.title;
+            document.getElementById('m2-scenario-desc').innerText = current.desc;
+            document.getElementById('m2-scenario-target').innerText = current.target;
+
+            const container = document.getElementById('m2-options-container');
+            container.innerHTML = '';
+
+            allEngineOptions.forEach(eng => {
+                const btn = document.createElement('button');
+                btn.className = `glass-card p-4 rounded-2xl border border-slate-700 hover:border-purple-500 hover:bg-slate-800 transition flex items-center space-x-3 text-left w-full group`;
+                btn.innerHTML = `
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center text-lg shrink-0 group-hover:scale-110 transition">
+                        <i class="fa-solid ${eng.icon}"></i>
+                    </div>
+                    <div>
+                        <span class="font-heading font-bold text-white text-sm block">${eng.name}</span>
+                        <span class="text-xs text-slate-400">Seçmek için tıkla</span>
+                    </div>
+                `;
+                btn.onclick = () => evaluateM2Choice(eng.name, current);
+                container.appendChild(btn);
+            });
+        }
+
+        function evaluateM2Choice(chosenName, scenario) {
+            if (chosenName === scenario.correctEngine) {
+                playSound('correct');
+                addScore(20);
+                alertModal(`Doğru Seçim! 🎉\n${scenario.explanation}`, () => {
+                    state.mod2CurrentStep++;
+                    if (state.mod2CurrentStep < m2Scenarios.length) {
+                        loadM2Step();
+                    } else {
+                        playSound('win');
+                        unlockBadge('mod2');
+                        alertModal("Tebrikler! 2. Bölümün (Arama Motorları Uzmanı) tüm görevlerini tamamladın!\n\n2. Bölüm kilitlendi. Ana menüye yönlendiriliyorsun.", () => {
+                            showModule('dashboard');
+                        });
+                    }
+                });
+            } else {
+                playSound('wrong');
+                alertModal(`Yanlış Seçim! ❌\nİpucu: Bu senaryoda aranan ana amaç "${scenario.target}" kapsamındadır. Tekrar dene!`);
+            }
+        }
+
+        // --- MODULE 3 GAME LOGIC (VERİMLİLİK ARENASI) ---
+        const m3Scenarios = [
+            {
+                title: "Bulut Depolama (Google Drive / OneDrive) Kullanmak",
+                desc: "Ödev dosyalarını USB bellekte taşımak yerine bulut depolamaya yükleyerek evde ve okulda sorunsuz erişmek.",
+                isEfficient: true,
+                icon: "fa-cloud-arrow-up",
+                tag: "Bulut Teknolojileri"
+            },
+            {
+                title: "Çevrim İçi Eş Zamanlı Belge Paylaşımı",
+                desc: "Grup ödevinde 4 arkadaşın aynı dosya üzerinde aynı anda internet üzerinden birlikte çalışması.",
+                isEfficient: true,
+                icon: "fa-users-line",
+                tag: "İş Birliği Araçları"
+            },
+            {
+                title: "Rastgele Forum Soru-Cevap Sitelerinde Araştırma Yapmak",
+                desc: "Ders araştırması yaparken kaynağı belirsiz forumlardaki doğrulanmamış yazıları okuyarak zaman kaybetmek.",
+                isEfficient: false,
+                icon: "fa-comments",
+                tag: "Bilgi Kirliliği"
+            },
+            {
+                title: "Arama Motorunda Filtre ve Operatörleri Kullanmak",
+                desc: "Yüzlerce alakasız sayfa gezmek yerine `filetype:pdf` ve `site:edu.tr` yazarak doğrudan rapora ulaşmak.",
+                isEfficient: true,
+                icon: "fa-filter",
+                tag: "İleri Arama"
+            },
+            {
+                title: "Ders Çalışırken Sosyal Medya Bildirimlerini Açık Tutmak",
+                desc: "İnternette araştırma yaparken her 2 dakikada bir gelen oyun ve sosyal medya bildirimlerine bakmak.",
+                isEfficient: false,
+                icon: "fa-bell-slash",
+                tag: "Dikkat Dağınıklığı"
+            },
+            {
+                title: "EBA Portalı Üzerinden Ders İçeriği Aramak",
+                desc: "EBA sistemini kullanarak doğrudan 6. sınıf ders videolarına ulaşmak.",
+                isEfficient: true,
+                icon: "fa-graduation-cap",
+                tag: "Doğru Kaynak Kullanımı"
+            }
+        ];
+
+        function loadM3Step() {
+            if (state.m3CurrentStep >= m3Scenarios.length) return;
+            const current = m3Scenarios[state.m3CurrentStep];
+            if (!current) return;
+
+            document.getElementById('m3-progress-text').innerText = `${state.m3CurrentStep + 1} / ${m3Scenarios.length}`;
+            document.getElementById('m3-progress-bar').style.width = `${((state.m3CurrentStep) / m3Scenarios.length) * 100}%`;
+
+            document.getElementById('m3-card-icon').className = `fa-solid ${current.icon}`;
+            document.getElementById('m3-card-title').innerText = current.title;
+            document.getElementById('m3-card-desc').innerText = current.desc;
+            document.getElementById('m3-tech-tag').innerText = current.tag;
+        }
+
+        function evaluateM3Choice(userAnswer) {
+            if (state.m3CurrentStep >= m3Scenarios.length) return;
+            const current = m3Scenarios[state.m3CurrentStep];
+            if (!current) return;
+
+            if (userAnswer === current.isEfficient) {
+                playSound('correct');
+                addScore(15);
+                state.m3CurrentStep++;
+                if (state.m3CurrentStep < m3Scenarios.length) {
+                    loadM3Step();
+                } else {
+                    document.getElementById('m3-progress-bar').style.width = '100%';
+                    playSound('win');
+                    unlockBadge('mod3');
+                    alertModal("Tebrikler! 3. Bölümün (Verimlilik Arenası) tüm görevlerini tamamladın!\n\n3. Bölüm kilitlendi. Ana menüye yönlendiriliyorsun.", () => {
+                        showModule('dashboard');
+                    });
+                }
+            } else {
+                playSound('wrong');
+                alertModal(`Tekrar Düşün! 💡\n"${current.title}" davranışı ${current.isEfficient ? 'zamandan tasarruf sağlar ve verimliliği artırır.' : 'dikkati dağıtır veya zaman kaybına yol açar.'}`);
+            }
+        }
+
+        // Custom Modal Alert Box with optional callback
+        function alertModal(message, onCloseCallback = null) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in';
+            modal.innerHTML = `
+                <div class="glass-card max-w-md w-full rounded-3xl p-6 border-purple-500/40 text-center space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-500/20 text-purple-400 mx-auto flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </div>
+                    <p class="text-slate-200 text-sm whitespace-pre-line leading-relaxed font-medium">${message}</p>
+                    <button id="modal-alert-ok-btn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-2.5 rounded-xl transition text-sm">
+                        Tamam
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('modal-alert-ok-btn').onclick = () => {
+                modal.remove();
+                if (typeof onCloseCallback === 'function') {
+                    onCloseCallback();
+                }
+            };
+        }
+
+        // INIT ON LOAD
+        window.onload = function() {
+            updateMod1TabUI();
+            loadM1Step();
+            initOperatorMatching();
+            loadM2Step();
+            loadM3Step();
+            updateDashboardCards();
+        };
+    </script>
+</body>
+</html>
